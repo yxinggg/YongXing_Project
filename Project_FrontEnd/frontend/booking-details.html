@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bookings</title>
+<style>
+    body {
+    background-color: #e7f0f1;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #3f4a5b;
+        padding: 10px 20px;
+        position: relative;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        margin-right: 15px;
+    }
+
+    .nav-links a:hover {
+        text-decoration: underline;
+    }
+
+    .search-container {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        align-items: center;
+    }
+
+    .search-bar {
+        padding: 5px;
+        border-radius: 5px;
+        border: none;
+        outline: none;
+        width: 200px;
+    }
+
+    .search-button {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #e7f0f1;
+        color: #2a3142;
+        cursor: pointer;
+    }
+
+    .search-button:hover {
+        background-color: #3f4a5b;
+        color: #fff;
+    }
+
+    .logout-btn {
+        font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+        font-size: 15px;
+        background-color: #e7f0f1;
+        color: #2a3142;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .logout-btn:hover {
+        background-color: #3f4a5b;
+        color: #fff;
+    }
+
+    .hero-image {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url("images/banner 2.jpeg");
+        height: 240px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .banner-text {
+        position: absolute;
+        bottom: 90px;
+        width: 100%;
+        font-size: 40px;
+        font-weight: bold;
+    }
+    .sort-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .sort-button {
+        padding: 10px 20px;
+        border: #61718a solid ;
+        border-radius: 7px;
+        color: #2a3142;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-bottom: 10px;
+    }
+
+    .sort-button:hover {
+        background-color: #61718a;
+    }
+
+    .sort-options {
+        display: none;
+        position: absolute;
+        background-color: #fff;
+        min-width: 160px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 1;
+        border-radius: 8px;
+    }
+
+    .sort-options a {
+        color: #2a3142;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+    }
+
+    .sort-options a:hover {
+        background-color: #e7f0f1;
+        border-radius: 8px;
+
+    }
+
+    table {
+        padding-top: 20px;
+        background-color: #e7f0f1;
+        color: #2a3142;
+        width: 100%;
+        height: 80%;
+        margin-left: auto; 
+        margin-right: auto;
+        font-weight: lighter;
+    }
+
+    table, th, td {
+        border: solid #61718a;
+        border-collapse: collapse;
+        text-align: center;
+    }
+
+    th {
+        color: #fff;
+        background-color: #61718a;
+    }
+
+    button {
+        border: #61718a solid ;
+        border-radius: 7px;
+        color: #2a3142;
+        text-align: center;
+        font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+    }
+    button:hover {
+        background-color: #2a3142;
+        color: #fff;
+    }
+
+    footer {
+        background-color: #e7f0f1;
+        color: black;
+        text-align: center;
+        padding: 10px 0;
+        position: relative;
+        width: 100%;
+        bottom: 0;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking-details.html">Booking Details</a>
+            <a href="add-booking.html">Add Booking</a>
+        </div>
+        <div class="search-container">
+            <input type="text" id="searchBar" class="search-bar" placeholder="Search...">
+            <button class="search-button" onclick="searchBookings()">Search</button>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div id="booking-banner">
+        <div class="hero-image">
+            <div class="banner-text">Booking Details</div>
+        </div>
+    </div>
+
+    <div class="sort-dropdown">
+        <button class="sort-button" onclick="toggleSortOptions()">Sort By</button>
+        <div id="sortOptions" class="sort-options">
+            <a href="#" onclick="sortBookings('facilitydescription')">Facility Description</a>
+            <a href="#" onclick="sortBookings('bookedby')">Booked By</a>
+            <a href="#" onclick="sortBookings('bookingdatefrom')">Booking Date From</a>
+        </div>
+    </div>
+
+    <div id="booking-table-container"></div>
+
+    <footer>
+        <hr>
+        &copy; 2024 Booking Facility. All rights reserved.
+    </footer>
+
+    <script>
+
+        let allBookings = []; // Store all bookings here
+
+
+function checkLogin() {
+    const token = sessionStorage.getItem('jwtToken');
+    const userRole = sessionStorage.getItem('userRole');
+    const userId = sessionStorage.getItem('userId');
+
+    if (!token) {
+        window.location.href = 'login.html';
+    }
+
+    // Make sure userRole and userId are stored
+    if (!userRole || !userId) {
+        // Fetch user role and ID from the token or backend
+        // Example: Decode the token or make an API call to fetch user details
+    }
+}
+
+function logout() {
+    sessionStorage.removeItem('jwtToken');
+    sessionStorage.removeItem('userRole');
+    sessionStorage.removeItem('userId');
+    window.location.href = 'login.html';
+}
+    
+        function generateBookingTable(bookingInfo) {
+            let tableHeading = 
+                `<table>
+                    <tr>
+                        <th>Booking ID</th>
+                        <th>Facility Description</th>
+                        <th>Booking Date From</th>
+                        <th>Booking Date To</th>
+                        <th>Booked By</th>
+                        <th>Booking Status</th>
+                        <th>Actions</th>
+                    </tr>`;
+            
+            let tableEnding = `</table>`;
+    
+            let tableInfoHTML = "";
+            for (let i = 0; i < bookingInfo.length; i++) {
+                tableInfoHTML += "<tr>";
+                tableInfoHTML += "<td>" + bookingInfo[i].bookingID + "</td>";
+                tableInfoHTML += "<td>" + bookingInfo[i].facilityDescription + "</td>";
+                tableInfoHTML += "<td>" + bookingInfo[i].bookingDateFrom + "</td>";
+                tableInfoHTML += "<td>" + bookingInfo[i].bookingDateTo + "</td>";
+                tableInfoHTML += "<td>" + bookingInfo[i].bookedBy + "</td>";
+                tableInfoHTML += "<td>" + bookingInfo[i].bookingStatus + "</td>";
+                tableInfoHTML += `<td>
+                    <button onclick='deleteBookingByID(${bookingInfo[i].bookingID})'>Delete</button>
+                    <button onclick='updateBookingByID(${bookingInfo[i].bookingID})'>Update</button>
+                </td>`;
+                tableInfoHTML += "</tr>";
+            }
+    
+            document.getElementById("booking-table-container").innerHTML = tableHeading + tableInfoHTML + tableEnding;
+        }
+    
+        function updateBookingByID(bookingID) {
+            window.location.href = `update.html?id=${bookingID}`;
+        }
+    
+        function deleteBookingByID(bookingID) {
+            let isSure = confirm("Are you sure to delete?");
+
+            if (isSure) {
+                var controllerURL = "http://localhost:5053/api/Bookings/delete?id=" + bookingID;
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("DELETE", controllerURL, true);
+                xhttp.setRequestHeader('Content-Type', 'application/json');
+
+                const token = sessionStorage.getItem('jwtToken');
+                if (token) {
+                    xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+                } else {
+                    console.error('No token found in sessionStorage');
+                }
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4) {
+                        if (this.status == 200) {
+                            console.log("Booking deleted successfully.");
+                            location.reload();
+                        } else {
+                            console.error("Failed to delete booking. Status: " + this.status);
+                            console.error(xhttp.responseText);
+                        }
+                    }
+                };
+
+                xhttp.send();
+            }
+        }
+    
+        function fetchBookings() {
+            var controllerURL = "http://localhost:5053/api/Bookings/GetAll";
+            var xhttp = new XMLHttpRequest();
+            var bookingInfo;
+    
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    bookingInfo = JSON.parse(xhttp.responseText);
+                    generateBookingTable(bookingInfo);
+                } else if (this.status == 401) {
+                    console.error('Unauthorized: Invalid or expired token');
+                    window.location.href = 'login.html';
+                }
+            };              
+    
+            const token = sessionStorage.getItem('jwtToken');
+            if (token) {
+                xhttp.open("GET", controllerURL, true);
+                xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+                xhttp.send();
+            } else {
+                console.error('No token found in sessionStorage');
+                window.location.href = 'login.html';
+            }
+        }
+
+
+        function searchBookings() {
+        const searchTerm = document.getElementById('searchBar').value;
+        const token = sessionStorage.getItem('jwtToken');
+        const userRole = sessionStorage.getItem('userRole');
+        const userId = sessionStorage.getItem('userId');
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", `http://localhost:5053/api/Bookings/searchbookings/search?term=${encodeURIComponent(searchTerm)}&userRole=${userRole}&userId=${userId}`, true);
+        xhttp.setRequestHeader('Content-Type', 'application/json');
+        xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+
+        xhttp.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                const response = JSON.parse(this.responseText);
+                generateBookingTable(response);
+            }
+        };
+        xhttp.send();
+    }
+
+
+        let sortDirection = 'asc'; // Start with ascending sort direction
+
+        function toggleSortOptions() {
+            const sortOptions = document.getElementById("sortOptions");
+            sortOptions.style.display = sortOptions.style.display === "block" ? "none" : "block";
+        }
+
+        function sortBookings(sortBy) {
+            // Toggle the sort direction each time a sort option is selected
+            sortDirection = (sortDirection === 'asc') ? 'desc' : 'asc';
+            
+            var controllerURL = `http://localhost:5053/api/Bookings/GetSortedBookings/sort?sortBy=${sortBy}&direction=${sortDirection}`;
+            var xhttp = new XMLHttpRequest();
+            var bookingInfo;
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    bookingInfo = JSON.parse(xhttp.responseText);
+                    generateBookingTable(bookingInfo);
+                } else if (this.status == 401) {
+                    console.error('Unauthorized: Invalid or expired token');
+                    window.location.href = 'login.html';
+                }
+            };
+
+            const token = sessionStorage.getItem('jwtToken');
+            if (token) {
+                xhttp.open("GET", controllerURL, true);
+                xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+                xhttp.send();
+            } else {
+                console.error('No token found in sessionStorage');
+                window.location.href = 'login.html';
+            }
+
+            toggleSortOptions(); // Hide the dropdown after selecting an option
+        }
+
+        checkLogin();
+        fetchBookings();
+
+    </script>
+    
+</body>
+</html>

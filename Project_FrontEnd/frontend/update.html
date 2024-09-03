@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Booking</title>
+    <style>
+    body {
+        background-color: #e7f0f1;
+        font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+        }
+
+        .navbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #3f4a5b;
+            padding: 10px 20px;
+        }
+
+        .navbar a {
+            color: #fff;
+            text-decoration: none;
+            margin-right: 15px;
+        }
+
+        .navbar a:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+            font-size: 15px;
+            background-color: #e7f0f1;
+            color: #2a3142;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .logout-btn:hover {
+            background-color: #3f4a5b;
+            color: #fff;
+        }
+
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            margin-top: 20px;
+            margin-bottom: 70px;
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            font-weight: bold
+;        }
+        h2 {
+            text-align: center;
+            color: #2a3142;
+        }
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #2a3142;
+        }
+        input[type="text"], input[type="date"], select {
+            width: 95%;
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            display: inline-block;
+            background-color: #2a3142;
+            color: white;
+            padding: 10px 20px;
+            text-align: center;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #3f4a5b;
+        }
+        footer {
+        background-color: #e7f0f1;
+        color: black;
+        text-align: center;
+        padding: 10px 0;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+    }
+
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking-details.html">Booking Details</a>
+            <a href="add-booking.html">Add Booking</a>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div class="container">
+        <h2>Update Booking</h2>
+        <form id="updateBookingForm">
+
+            <label for="facilityDescription">Facility Description</label>
+            <input type="text" id="facilityDescription" name="facilityDescription">
+
+            <label for="bookingDateFrom">Booking Date From</label>
+            <input type="date" id="bookingDateFrom" name="bookingDateFrom">
+
+            <label for="bookingDateTo">Booking Date To</label>
+            <input type="date" id="bookingDateTo" name="bookingDateTo">
+
+            <label for="bookingDateTo">Booked By</label>
+            <input type="text" id="bookedBy" name="bookedBy">
+
+            <div class="form-group">
+                <label for="bookingStatus">Booking Status</label>
+                <select id="bookingStatus" name="bookingStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+
+            <button type="button" onclick="updateBookingDetails()">Update Booking</button>
+        </form>
+    </div>
+    <footer>
+        <hr>
+        &copy; 2024 Booking Facility. All rights reserved.
+    </footer>
+
+    <script>
+        function loadBookingDetails() {
+            const bookingID = new URLSearchParams(window.location.search).get('id');
+            if (bookingID) {
+                // Fetch booking details based on ID and populate the form
+                const controllerURL = "http://localhost:5053/api/Bookings/getbyid?id=" + bookingID;
+                const xhttp = new XMLHttpRequest();
+                
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        const bookingInfo = JSON.parse(this.responseText);
+                        document.getElementById('bookingID').value = bookingInfo.bookingID;
+                        document.getElementById('facilityDescription').value = bookingInfo.facilityDescription;
+                        document.getElementById('bookingDateFrom').value = bookingInfo.bookingDateFrom.split('T')[0];
+                        document.getElementById('bookingDateTo').value = bookingInfo.bookingDateTo.split('T')[0];
+                        document.getElementById('bookedBy').value = bookingInfo.bookedBy;
+                        document.getElementById('bookingStatus').value = bookingInfo.bookingStatus;
+                    }
+                };
+
+                // Retrieve JWT token from sessionStorage
+                const token = sessionStorage.getItem('jwtToken');
+                if (token) {
+                    xhttp.open("GET", controllerURL, true);
+                    xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+                    xhttp.send();
+                } else {
+                    console.error('No token found in sessionStorage');
+                }
+            }
+        }
+
+        function updateBookingDetails() {
+            const bookingID = new URLSearchParams(window.location.search).get('id'); // Get booking ID from URL
+            const facilityDescription = document.getElementById('facilityDescription').value;
+            const bookingDateFrom = document.getElementById('bookingDateFrom').value;
+            const bookingDateTo = document.getElementById('bookingDateTo').value;
+            const bookedBy = document.getElementById('bookedBy').value;
+            const bookingStatus = document.getElementById('bookingStatus').value;
+
+            const updatedBooking = {
+                bookingID,
+                facilityDescription,
+                bookingDateFrom,
+                bookingDateTo,
+                bookedBy,
+                bookingStatus
+            };
+
+            const controllerURL = "http://localhost:5053/api/Bookings/put?id=" + bookingID;
+            const xhttp = new XMLHttpRequest();
+
+            xhttp.open("PUT", controllerURL, true);
+            xhttp.setRequestHeader('Content-Type', 'application/json');
+
+            // Retrieve JWT token from sessionStorage
+            const token = sessionStorage.getItem('jwtToken');
+            if (token) {
+                xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+            } else {
+                console.error('No token found in sessionStorage');
+            }
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    alert('Booking updated successfully');
+                    window.location.href = 'booking-details.html';
+                } else if (this.readyState == 4) {
+                    console.error(this.responseText);
+                    alert('Failed to update booking');
+                }
+            };
+
+            xhttp.send(JSON.stringify(updatedBooking));
+        }
+
+
+        // Load booking details when the page loads
+        window.onload = loadBookingDetails;
+    </script>
+</body>
+</html>

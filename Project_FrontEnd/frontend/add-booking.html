@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Add Booking</title>
+<style>
+body {
+    background-color: #e7f0f1;
+    font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #3f4a5b;
+        padding: 10px 20px;
+    }
+
+    .navbar a {
+        color: #fff;
+        text-decoration: none;
+        margin-right: 15px;
+    }
+
+    .navbar a:hover {
+        text-decoration: underline;
+    }
+
+    .logout-btn {
+        font-family:'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+        font-size: 15px;
+        background-color: #e7f0f1;
+        color: #2a3142;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .logout-btn:hover {
+        background-color: #3f4a5b;
+        color: #fff;
+    }
+
+    .container {
+        max-width: 800px;
+        margin: 0 auto;
+        margin-top: 20px;
+        margin-bottom: 70px;
+        padding: 20px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    }
+
+    h1 {
+        text-align: center;
+        color: #2a3142;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #2a3142;
+    }
+
+    .form-group input, .form-group textarea {
+        width: 100%;
+        padding: 8px;
+        box-sizing: border-box;
+    }
+
+    .form-group textarea {
+        height: 100px;
+    }
+
+    .form-group button {
+        display: inline-block;
+        background-color: #2a3142;
+        color: white;
+        padding: 10px 20px;
+        text-align: center;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .form-group button:hover {
+        background-color: #3f4a5b;
+    }
+
+    footer {
+        background-color: #e7f0f1;
+        color: black;
+        text-align: center;
+        padding: 10px 0;
+        position: fixed;
+        width: 100%;
+        bottom: 0;
+    }
+
+</style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking-details.html">Booking Details</a>
+            <a href="add-booking.html">Add Booking</a>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+    
+    <div class="container">
+        <h1>Add New Booking</h1>
+        <form id="add-booking-form">
+            <div class="form-group">
+                <label for="facilityDescription">Facility Description:</label>
+                <input type="text" id="facilityDescription" name="facilityDescription" required>
+            </div>
+            <div class="form-group">
+                <label for="bookingDateFrom">Booking Date From:</label>
+                <input type="date" id="bookingDateFrom" name="bookingDateFrom" required>
+            </div>
+            <div class="form-group">
+                <label for="bookingDateTo">Booking Date To:</label>
+                <input type="date" id="bookingDateTo" name="bookingDateTo" required>
+            </div>
+            <div class="form-group">
+                <label for="bookedBy">Booked By:</label>
+                <input type="text" id="bookedBy" name="bookedBy" required>
+            </div>
+            <div class="form-group">
+                <label for="bookingStatus">Booking Status</label>
+                <select id="bookingStatus" name="bookingStatus">
+                    <option value="Pending">Pending</option>
+                    <option value="Confirmed">Confirmed</option>
+                    <option value="Cancelled">Cancelled</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <button type="submit">Add Booking</button>
+            </div>
+        </form>
+    </div>
+    <footer>
+        <hr>
+        &copy; 2024 Booking Facility. All rights reserved.
+    </footer>
+    <script>
+        document.getElementById('add-booking-form').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            const facilityDescription = document.getElementById('facilityDescription').value;
+            const bookingDateFrom = document.getElementById('bookingDateFrom').value;
+            const bookingDateTo = document.getElementById('bookingDateTo').value;
+            const bookedBy = document.getElementById('bookedBy').value;
+            const bookingStatus = document.getElementById('bookingStatus').value;
+
+            const bookingData = {
+                facilityDescription: facilityDescription,
+                bookingDateFrom: bookingDateFrom,
+                bookingDateTo: bookingDateTo,
+                bookedBy: bookedBy,
+                bookingStatus: bookingStatus
+            };
+
+            const token = sessionStorage.getItem('jwtToken');
+            if (!token) {
+                alert('You must be logged in to add a booking.');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            fetch('http://localhost:5053/api/Bookings/post', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token
+                },
+                body: JSON.stringify(bookingData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert('Booking added successfully!');
+                // Redirect or clear form
+                window.location.href = 'booking-details.html'; // Redirect to the bookings list page
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('There was a problem adding the booking.');
+            });
+        });
+    </script>
+</body>
+</html>

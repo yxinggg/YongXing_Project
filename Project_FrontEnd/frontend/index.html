@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Home</title>
+<style>
+    body {
+        background-color: #e7f0f1;
+        font-family: 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+        margin: 0;
+        padding: 0;
+    }
+
+    .navbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #3f4a5b;
+        padding: 10px 20px;
+        position: relative;
+    }
+
+    .nav-links {
+        display: flex;
+        align-items: center;
+    }
+
+    .nav-links a {
+        color: #fff;
+        text-decoration: none;
+        margin-right: 15px;
+    }
+
+    .nav-links a:hover {
+        text-decoration: underline;
+    }
+
+    .logout-btn {
+        font-family: 'Gill Sans', 'Gill Sans MT', 'Trebuchet MS', sans-serif;
+        font-size: 15px;
+        background-color: #e7f0f1;
+        color: #2a3142;
+        padding: 10px 15px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .logout-btn:hover {
+        background-color: #3f4a5b;
+        color: #fff;
+    }
+
+    .hero-image {
+        background-image: linear-gradient(rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.3)), url("images/banner 2.jpeg");
+        height: 240px;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
+        position: relative;
+        color: white;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .banner-text {
+        position: absolute;
+        bottom: 90px;
+        width: 100%;
+        font-size: 40px;
+        font-weight: bold;
+        color: #fff;
+    }
+
+    .promotions-section {
+        text-align: center;
+        color: #2a3142;
+        margin: 20px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .promotions-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: center;
+    }
+
+    .promotion-card {
+        background-color: #e7f0f1;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        width: 250px;
+        text-align: center;
+    }
+
+    .comments-section {
+        text-align: center;
+        color: #2a3142;
+        margin: 20px;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .comments-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start;
+    }
+
+    .comment-card {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        padding: 15px;
+        width: 250px;
+        height: auto;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
+    .comment-content {
+        font-size: 16px;
+        color: #2a3142;
+        margin-bottom: 10px;
+    }
+
+    footer {
+        background-color: #e7f0f1;
+        color: black;
+        text-align: center;
+        padding: 10px 0;
+        position: relative;
+        width: 100%;
+        bottom: 0;
+    }
+</style>
+</head>
+<body>
+    <div class="navbar">
+        <div class="nav-links">
+            <a href="index.html">Home</a>
+            <a href="booking-details.html">Booking Details</a>
+            <a href="add-booking.html">Add Booking</a>
+        </div>
+        <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+
+    <div id="booking-banner">
+        <div class="hero-image">
+            <div class="banner-text">Welcome to Booking Facility</div>
+        </div>
+    </div>
+
+    <div class="promotions-section">
+        <h2>Attractive Promotions!</h2>
+        <div id="promotions-container" class="promotions-container"></div>
+    </div>
+    
+    <div class="comments-section">
+        <h2>Overheard from Clients</h2>
+        <div class="comments-container" id="comments-container"></div>
+    </div>
+
+    <footer>
+        <hr>
+        &copy; 2024 Booking Facility. All rights reserved.
+    </footer>
+
+    <script>
+        function checkLogin() {
+            const token = sessionStorage.getItem('jwtToken');
+            if (!token) {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('jwtToken');
+            window.location.href = 'login.html';
+        }
+
+        function fetchComments() {
+            const controllerURL = "http://localhost:5053/api/Bookings/getcomments/vs?type=fixed";
+            const xhttp = new XMLHttpRequest();
+
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    const comments = JSON.parse(this.responseText);
+                    displayComments(comments);
+                } else if (this.status == 401) {
+                    console.error('Unauthorized: Invalid or expired token');
+                    window.location.href = 'login.html';
+                }
+            };
+
+            const token = sessionStorage.getItem('jwtToken');
+            if (token) {
+                xhttp.open("GET", controllerURL, true);
+                xhttp.setRequestHeader('Authorization', 'Bearer ' + token);
+                xhttp.send();
+            } else {
+                console.error('No token found in sessionStorage');
+                window.location.href = 'login.html';
+            }
+        }
+
+        function displayComments(comments) {
+            let commentsHTML = '';
+            comments.forEach(comment => {
+                commentsHTML += `
+                    <div class="comment-card">
+                        <div class="comment-content">${comment}</div>
+                    </div>`;
+            });
+            document.getElementById("comments-container").innerHTML = commentsHTML;
+        }
+
+        function fetchPromotions() {
+            const controllerURL = "http://localhost:5053/api/Promotions"; // Ensure this URL is correct
+            fetch(controllerURL)
+                .then(response => response.json())
+                .then(promotions => displayPromotions(promotions))
+                .catch(error => console.error('Error fetching promotions:', error));
+        }
+
+        const baseUrl = "http://localhost:5053";
+
+        function displayPromotions(promotions) {
+            let promotionsHTML = '';
+            promotions.forEach(promotion => {
+                promotionsHTML += `
+                    <div class="promotion-card">
+                        <img src="${baseUrl}${promotion.imagePath}" alt="Promotion Image" style="width: 100%; height: auto;">
+                        <h3>Promotion</h3>
+                        <p>${promotion.text}</p>
+                    </div>`;
+            });
+            document.getElementById("promotions-container").innerHTML = promotionsHTML;
+        }
+
+        window.onload = function() {
+            checkLogin();
+            fetchComments();
+            fetchPromotions();
+        }
+    </script>
+</body>
+</html>
